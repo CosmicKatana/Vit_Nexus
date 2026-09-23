@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({
                 Developed By Daksh Mehan
               </p>
               <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
-                Nexivia Solutions LLP · FY CSE-AI
+                FY CSE-Ai B · Nexivia Solutions LLP
               </p>
             </div>
 

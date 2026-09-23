@@ -3,6 +3,7 @@ import {
   UserAcademicConfig,
   TimetableSession,
   BatchFilter,
+  BatchNumber,
   TimelineOccurrence,
 } from './types/timetable';
 import { getStoredConfig, saveStoredConfig, clearStoredConfig, clearAllCachedTimetables } from './utils/storage';
@@ -18,6 +19,7 @@ import { Footer } from './components/layout/Footer';
 import { HeroEvent } from './components/dashboard/HeroEvent';
 import { DaySelector } from './components/dashboard/DaySelector';
 import { DayTimeline } from './components/dashboard/DayTimeline';
+import { QuickDeck } from './components/dashboard/QuickDeck';
 import { WeekGrid } from './components/timetable/WeekGrid';
 import { TimetableSearchFilter } from './components/timetable/TimetableSearchFilter';
 import { ClassDetailModal } from './components/timetable/ClassDetailModal';
@@ -27,11 +29,11 @@ import { AboutModal } from './components/settings/AboutModal';
 import { PDFUploadModal } from './components/upload/PDFUploadModal';
 import { MobileNavigation } from './components/layout/MobileNavigation';
 import { MobileInstallModal } from './components/ui/MobileInstallModal';
-import { OfflineBanner } from './components/ui/OfflineBanner';
 import { FuturisticLoader } from './components/ui/FuturisticLoader';
 import { LandingHero } from './components/dashboard/LandingHero';
 import { getTodayDateString } from './utils/timeUtils';
 import { generateSamplePreviewSchedule } from './data/samplePreviewData';
+import { checkIsCreatorAdmin } from './utils/adminAuth';
 import { SlidersHorizontal, AlertTriangle } from 'lucide-react';
 
 export default function App() {
@@ -41,6 +43,7 @@ export default function App() {
   const [config, setConfig] = useState<UserAcademicConfig | null>(() => getStoredConfig());
   const [isIdentityPickerOpen, setIsIdentityPickerOpen] = useState<boolean>(() => !getStoredConfig());
   const [isFirstVisit, setIsFirstVisit] = useState<boolean>(() => !getStoredConfig());
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => checkIsCreatorAdmin());
 
   // Clear previous sample events on mount as requested
   useEffect(() => {
@@ -174,6 +177,15 @@ export default function App() {
     setSelectedDetailDateMs(dateMs);
   };
 
+  // Instant 1-tap batch switch from quick deck
+  const handleQuickChangeBatch = useCallback((newBatch: BatchNumber) => {
+    if (!config) return;
+    const updated: UserAcademicConfig = { ...config, batch: newBatch };
+    setConfig(updated);
+    saveStoredConfig(updated);
+    setBatchFilter(String(newBatch) as BatchFilter);
+  }, [config]);
+
   // Load sample demo schedule for on-demand UI preview
   const handleLoadDemoSchedule = useCallback(() => {
     if (!config || !timetableData) return;
@@ -241,6 +253,7 @@ export default function App() {
           onOpenIdentityPicker={() => setIsIdentityPickerOpen(true)}
           onOpenAbout={() => setIsAboutOpen(true)}
           onOpenUpload={() => setIsUploadModalOpen(true)}
+          isAdmin={isAdmin}
           liveTimeIST={config.timeFormat === '24' ? clock.timeFormatted24 : clock.timeFormatted12}
           liveDateIST={clock.dateFormatted}
         />
@@ -274,14 +287,6 @@ export default function App() {
         {/* Populated App Experience */}
         {config && (
           <>
-            {/* Offline & Cache Banner */}
-            <OfflineBanner
-              isCached={timetableData?.isCached || false}
-              cachedAt={timetableData?.cachedAt}
-              sourceVersion={timetableData?.sourceVersion}
-              isOnline={isOnline}
-            />
-
             {isLoading && (
               <FuturisticLoader
                 label="STREAMING TIMETABLE RECORDS"
@@ -291,53 +296,73 @@ export default function App() {
 
             {!isLoading && timetableData && (
               <>
-                {/* 1. COMMAND DASHBOARD TAB */}
+                {/* 1. COMMAND DASHBOARD TAB (Dual-Wing Cockpit) */}
                 {activeTab === 'command' && (
-                  <div className="space-y-6">
-                    {/* Hero Event: Current / Next Class with live countdown & door plate */}
-                    <HeroEvent
-                      currentClass={currentClass}
-                      nextClass={nextClass}
-                      afterClass={afterClass}
-                      todaySpecial={todaySpecial}
-                      now={clock.now}
-                      onOpenDetails={handleOpenDetails}
-                      userBatch={config.batch}
-                      totalEventsCount={timetableData.sessions.length}
-                      onOpenUpload={() => setIsUploadModalOpen(true)}
-                      divisionSlug={divisionSlug}
-                      onLoadDemoEvents={handleLoadDemoSchedule}
-                    />
-
-                    {/* Day Navigator */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2.5">
-                        <span className="text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
-                          Schedule Timeline
-                        </span>
-                        <span className="text-xs font-mono text-zinc-400">
-                          {selectedDayOffset === 0 ? 'Today' : `+${selectedDayOffset} days`}
-                        </span>
-                      </div>
-                      <DaySelector
-                        selectedOffset={selectedDayOffset}
-                        onSelectOffset={(offset) => setSelectedDayOffset(offset)}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    {/* Primary Command Wing (8 Cols on Desktop) */}
+                    <div className="lg:col-span-8 space-y-6">
+                      {/* Hero Event: Current / Next Class with circular chrono dial */}
+                      <HeroEvent
+                        currentClass={currentClass}
+                        nextClass={nextClass}
+                        afterClass={afterClass}
+                        todaySpecial={todaySpecial}
                         now={clock.now}
-                        sessions={timetableData.sessions}
+                        onOpenDetails={handleOpenDetails}
                         userBatch={config.batch}
+                        totalEventsCount={timetableData.sessions.length}
+                        onOpenUpload={() => setIsUploadModalOpen(true)}
+                        divisionSlug={divisionSlug}
+                        onLoadDemoEvents={handleLoadDemoSchedule}
+                        isAdmin={isAdmin}
                       />
+
+                      {/* Day Chrono Ribbon */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <span className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider">
+                            Daily Chrono Ribbon
+                          </span>
+                          <span className="text-xs font-mono text-zinc-400">
+                            {selectedDayOffset === 0 ? 'Today' : `+${selectedDayOffset} days ahead`}
+                          </span>
+                        </div>
+                        <DaySelector
+                          selectedOffset={selectedDayOffset}
+                          onSelectOffset={(offset) => setSelectedDayOffset(offset)}
+                          now={clock.now}
+                          sessions={timetableData.sessions}
+                          userBatch={config.batch}
+                        />
+                      </div>
+
+                      {/* Day Schedule Timeline Rail */}
+                      <div>
+                        <DayTimeline
+                          sessions={timetableData.sessions}
+                          userBatch={config.batch}
+                          date={selectedDate}
+                          now={clock.now}
+                          isToday={selectedDayOffset === 0}
+                          onOpenDetails={handleOpenDetails}
+                          timeFormat={config.timeFormat}
+                        />
+                      </div>
                     </div>
 
-                    {/* Day Schedule Timeline */}
-                    <div>
-                      <DayTimeline
-                        sessions={timetableData.sessions}
+                    {/* Studio Quick-Deck Wing (4 Cols on Desktop) */}
+                    <div className="lg:col-span-4 space-y-6">
+                      <QuickDeck
+                        config={config}
                         userBatch={config.batch}
-                        date={selectedDate}
-                        now={clock.now}
-                        isToday={selectedDayOffset === 0}
-                        onOpenDetails={handleOpenDetails}
-                        timeFormat={config.timeFormat}
+                        onChangeBatch={handleQuickChangeBatch}
+                        todaySessions={timetableData.sessions.filter(
+                          (s) => s.weekday === selectedDate.getDay() && (!s.batch || s.batch === config.batch)
+                        )}
+                        onOpenIdentityPicker={() => setIsIdentityPickerOpen(true)}
+                        onOpenUpload={() => setIsUploadModalOpen(true)}
+                        onOpenCalendar={() => setActiveTab('calendar')}
+                        currentDate={selectedDate}
                       />
                     </div>
                   </div>
@@ -356,57 +381,66 @@ export default function App() {
                       userBatch={config.batch}
                     />
 
-                    <div className="glass-surface rounded-2xl sm:rounded-3xl p-4 sm:p-6 backdrop-blur-xl">
-                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
-                        <h3 className="font-['Cabinet_Grotesk'] text-lg font-bold text-white">
-                          Schedule Records
-                        </h3>
-                        <span className="font-mono text-xs text-zinc-400">
-                          {searchFilteredSessions.length} sessions found
+                    <div className="studio-card rounded-3xl p-5 sm:p-7">
+                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]">
+                        <div>
+                          <h3 className="font-['Cabinet_Grotesk'] text-lg font-black text-white">
+                            Master Schedule Records
+                          </h3>
+                          <p className="text-xs text-zinc-400 font-mono mt-0.5">
+                            Form FF957 sessions filtered by search parameters
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs font-bold text-white px-2.5 py-1 rounded-xl bg-white/[0.06] border border-white/[0.1]">
+                          {searchFilteredSessions.length} sessions
                         </span>
                       </div>
 
                       {searchFilteredSessions.length === 0 ? (
-                        <div className="py-12 text-center text-xs text-zinc-400">
+                        <div className="py-14 text-center text-xs text-zinc-400">
                           <AlertTriangle className="h-6 w-6 text-amber-400 mx-auto mb-2 opacity-80" />
                           <p>No timetable sessions match your search query.</p>
                         </div>
                       ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-2.5">
                           {searchFilteredSessions.map((s) => {
                             const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                            const isLab = s.sessionType.toUpperCase().includes('LAB') || s.sessionType.toUpperCase().includes('PRAC');
                             return (
                               <div
                                 key={s.id}
                                 onClick={() => handleOpenDetails(s, clock.now.getTime())}
-                                className="glass-surface glass-surface-hover flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl transition-all cursor-pointer"
+                                className="studio-card studio-card-hover flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl transition-all cursor-pointer"
                               >
                                 <div className="flex items-center gap-3">
-                                  <div className="w-12 text-center py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] font-mono text-xs font-semibold text-zinc-300">
+                                  <div className="w-12 text-center py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-xs font-bold text-white">
                                     {dayNames[s.weekday]}
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <span className="font-mono text-xs font-semibold text-white">
+                                      <span className="font-mono text-xs font-bold text-white">
                                         {s.subjectCode}
                                       </span>
                                       <span className="text-xs text-zinc-600">·</span>
-                                      <span className="text-xs text-zinc-200 font-semibold">
+                                      <span className="text-xs text-zinc-200 font-bold">
                                         {s.subjectName}
                                       </span>
                                     </div>
-                                    <p className="text-xs text-zinc-400 font-mono mt-0.5">
-                                      {s.facultyName || `Faculty (${s.facultyInitials})`} · {s.sessionType}
+                                    <p className="text-xs text-zinc-400 font-mono mt-1">
+                                      {s.facultyName || `Faculty (${s.facultyInitials})`} ·{' '}
+                                      <span className={isLab ? 'text-emerald-400 font-semibold' : 'text-zinc-300'}>
+                                        {s.sessionType}
+                                      </span>
                                       {s.batch ? ` · Batch ${s.batch}` : ' · All Batches'}
                                     </p>
                                   </div>
                                 </div>
 
                                 <div className="flex items-center justify-between sm:justify-end gap-3 font-mono text-xs text-zinc-300">
-                                  <span className="text-zinc-400">
+                                  <span className="text-zinc-400 font-medium">
                                     {Math.floor(s.startTime / 60)}:{String(s.startTime % 60).padStart(2, '0')} – {Math.floor(s.endTime / 60)}:{String(s.endTime % 60).padStart(2, '0')}
                                   </span>
-                                  <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] font-medium text-white">
+                                  <span className="px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.1] font-bold text-white">
                                     Room {s.room}
                                   </span>
                                 </div>
@@ -460,8 +494,8 @@ export default function App() {
         />
       )}
 
-      {/* PDF Timetable Ingestion Portal Modal */}
-      {isUploadModalOpen && config && (
+      {/* PDF Timetable Ingestion Portal Modal (Restricted to Creator Admin) */}
+      {isUploadModalOpen && config && isAdmin && (
         <PDFUploadModal
           divisionSlug={divisionSlug}
           userBatch={config.batch}
@@ -490,6 +524,9 @@ export default function App() {
       {isAboutOpen && (
         <AboutModal
           onClose={() => setIsAboutOpen(false)}
+          isAdmin={isAdmin}
+          onToggleAdmin={setIsAdmin}
+          onOpenUpload={() => setIsUploadModalOpen(true)}
         />
       )}
 

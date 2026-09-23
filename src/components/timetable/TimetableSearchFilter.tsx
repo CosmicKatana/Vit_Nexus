@@ -24,21 +24,21 @@ export const TimetableSearchFilter: React.FC<TimetableSearchFilterProps> = ({
   const sessionTypes: ('ALL' | SessionType)[] = ['ALL', 'Theory', 'Lab', 'Tutorial', 'Activity'];
 
   return (
-    <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-md space-y-3">
-      {/* Search Input */}
+    <div className="studio-card p-4 sm:p-5 rounded-2xl sm:rounded-3xl space-y-3.5">
+      {/* Search Input Field */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by course code, subject name, faculty or room..."
-          className="w-full rounded-xl border border-slate-700 bg-slate-950/80 py-2.5 pl-10 pr-10 text-xs sm:text-sm text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors"
+          placeholder="Search by course code (e.g. CS2001), subject, faculty initials or room..."
+          className="w-full rounded-xl border border-white/[0.1] bg-white/[0.03] py-2.5 pl-10 pr-10 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:border-white/[0.3] focus:outline-none focus:ring-1 focus:ring-white/[0.2] transition-colors"
         />
         {searchQuery && (
           <button
             onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -48,36 +48,38 @@ export const TimetableSearchFilter: React.FC<TimetableSearchFilterProps> = ({
       {/* Filter Tabs Row */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Session Type Filters */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
-          <span className="text-slate-400 font-mono text-[11px] mr-1 flex items-center gap-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <span className="text-zinc-400 font-mono text-[11px] mr-1 flex items-center gap-1">
             <Filter className="h-3 w-3" /> Type:
           </span>
-          {sessionTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => onSessionTypeChange(type)}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer ${
-                selectedSessionType === type
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            {sessionTypes.map((type) => (
+              <button
+                key={type}
+                onClick={() => onSessionTypeChange(type)}
+                className={`px-3 py-1 rounded-lg font-mono text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  selectedSessionType === type
+                    ? 'bg-white text-zinc-950 shadow-sm font-bold'
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Batch Filter Buttons */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
-          <span className="text-slate-400 text-[10px] font-mono px-1">Batch:</span>
-          {(['1', '2', '3', 'ALL'] as BatchFilter[]).map((b) => (
+        <div className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.06]">
+          <span className="text-zinc-400 text-[10px] font-mono px-1">Batch:</span>
+          {(['1', '2', '3', '4', 'ALL'] as BatchFilter[]).map((b) => (
             <button
               key={b}
               onClick={() => onBatchFilterChange(b)}
-              className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
                 selectedBatchFilter === b
-                  ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
               {b === 'ALL' ? 'All' : `B${b}`}

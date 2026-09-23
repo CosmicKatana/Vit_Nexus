@@ -16,8 +16,8 @@ export type BranchCode =
 
 export type DivisionLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
-export type BatchNumber = '1' | '2' | '3';
-export type BatchFilter = '1' | '2' | '3' | 'ALL';
+export type BatchNumber = '1' | '2' | '3' | '4';
+export type BatchFilter = '1' | '2' | '3' | '4' | 'ALL';
 
 export type SessionType = 'Theory' | 'Lab' | 'Tutorial' | 'Project' | 'Seminar' | 'Activity';
 

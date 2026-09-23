@@ -17,31 +17,64 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(11, 13, 17, 0.6);
+  background: rgba(8, 10, 15, 0.7);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 /* ========================================================
-   MINIMAL GLASS DESIGN SYSTEM (Linear / Apple Pro aesthetic)
+   EXECUTIVE CHRONO STUDIO DESIGN SYSTEM
+   High-Precision Horology & Minimal Studio Aesthetic
    ======================================================== */
 
-/* Frosted glass surface */
-.glass-surface {
-  background: rgba(255, 255, 255, 0.025);
+/* Studio surface with top specular rim reflection */
+.studio-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%), #0d0f15;
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
-    0 10px 30px -10px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    0 12px 36px -12px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.studio-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studio-card-hover:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.065) 0%, rgba(255, 255, 255, 0.025) 100%), #0f1219;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 
+    0 20px 48px -16px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Active live class glow */
+.studio-card-active {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%), #0d1215;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 
+    0 16px 40px -12px rgba(16, 185, 129, 0.15),
+    inset 0 1px 0 0 rgba(16, 185, 129, 0.25);
+}
+
+/* Retain glass-surface for backwards compatibility */
+.glass-surface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%), #0d0f15;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 .glass-surface-hover {
@@ -49,11 +82,11 @@
 }
 
 .glass-surface-hover:hover {
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%), #10131c;
+  border-color: rgba(255, 255, 255, 0.16);
   box-shadow: 
-    0 16px 40px -12px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    0 16px 40px -12px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Interactive glass button */
@@ -61,19 +94,30 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.09);
   backdrop-filter: blur(16px);
-  transition: all 0.15s ease-out;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-button:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
   color: #ffffff;
 }
 
-/* Subtle architectural grid pattern in background */
-.subtle-grid {
+/* Subtle architectural blueprint grid pattern */
+.studio-grid {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  background-size: 40px 40px;
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 60%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Circular countdown pulse keyframes */
+@keyframes chrono-pulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.04); }
+}
+
+.chrono-pulse {
+  animation: chrono-pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

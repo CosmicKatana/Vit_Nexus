@@ -17,16 +17,16 @@ export const AcademicCalendarView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Info Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 via-slate-900/80 to-slate-950 backdrop-blur-xl">
+      <div className="studio-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 sm:p-7 rounded-3xl">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
             <Calendar className="h-4 w-4" />
             <span>VIT Official Academic Schedule</span>
           </div>
-          <h2 className="mt-1 font-['Cabinet_Grotesk'] text-xl sm:text-2xl font-black text-slate-100">
+          <h2 className="mt-1 font-['Cabinet_Grotesk'] text-xl sm:text-2xl font-black text-white">
             First Year Academic Calendar 2026–27
           </h2>
-          <p className="mt-1 text-xs text-slate-400 max-w-xl">
+          <p className="mt-1 text-xs text-zinc-400 max-w-xl leading-relaxed">
             Sourced and verified from the official Vishwakarma Institute of Technology Dean of Academics circular. All dates strictly adhere to the academic council schedule.
           </p>
         </div>
@@ -35,9 +35,9 @@ export const AcademicCalendarView: React.FC = () => {
           href={OFFICIAL_CALENDAR_PDF_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition-colors shadow-lg shadow-cyan-500/20 whitespace-nowrap cursor-pointer"
+          className="flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-zinc-950 hover:bg-zinc-200 transition-colors shadow-lg whitespace-nowrap cursor-pointer active:scale-95"
         >
-          <span>Official PDF</span>
+          <span>Official Circular PDF</span>
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
       </div>
@@ -53,19 +53,19 @@ export const AcademicCalendarView: React.FC = () => {
           {VERIFIED_EXAM_WINDOWS.map((window) => (
             <div
               key={window.label}
-              className="p-4 rounded-xl border border-amber-500/30 bg-amber-950/15 backdrop-blur-md relative overflow-hidden"
+              className="studio-card p-5 rounded-2xl border-amber-500/20 bg-amber-950/10 relative overflow-hidden"
             >
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
                 {window.type.replace('_', ' ')}
               </span>
 
-              <h3 className="mt-2 font-['Cabinet_Grotesk'] text-base font-bold text-slate-100">
+              <h3 className="mt-2.5 font-['Cabinet_Grotesk'] text-base font-bold text-white">
                 {window.label}
               </h3>
 
-              <div className="mt-3 pt-3 border-t border-amber-500/20 text-xs font-mono text-amber-300 flex items-center justify-between">
+              <div className="mt-3.5 pt-3 border-t border-white/[0.08] text-xs font-mono text-amber-300 flex items-center justify-between">
                 <span>{formatDateLong(window.from)}</span>
-                <span className="text-slate-400">→</span>
+                <span className="text-zinc-500">→</span>
                 <span>{formatDateLong(window.to)}</span>
               </div>
             </div>
@@ -84,30 +84,30 @@ export const AcademicCalendarView: React.FC = () => {
           {holidaysList.map((h) => (
             <div
               key={h.date}
-              className="flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-700 transition-colors"
+              className="studio-card flex items-center justify-between p-3.5 rounded-2xl"
             >
               <div>
-                <p className="font-semibold text-xs sm:text-sm text-slate-200">{h.name}</p>
+                <p className="font-bold text-xs sm:text-sm text-white">{h.name}</p>
                 <p className="text-[11px] font-mono text-rose-400 mt-0.5">
                   {formatDateLong(h.date)}
                 </p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-1 rounded bg-slate-950 text-slate-400 border border-slate-800">
-                Holiday
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                Recess
               </span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Day Order Notice & Invariant Policy */}
-      <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 text-xs text-slate-400 flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-cyan-400 shrink-0 mt-0.5" />
+      {/* Day Order Notice */}
+      <div className="studio-card p-4 sm:p-5 rounded-2xl text-xs text-zinc-400 flex items-start gap-3">
+        <AlertCircle className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-semibold text-slate-300">
+          <p className="font-bold text-zinc-200 font-mono">
             Day Order & Schedule Invariant Policy
           </p>
-          <p>
+          <p className="leading-relaxed">
             When VIT announces compensatory working days (such as Saturday following a Monday schedule), VIT Nexus dynamically maps the target day-order without guessing or fabricating lectures.
           </p>
         </div>
